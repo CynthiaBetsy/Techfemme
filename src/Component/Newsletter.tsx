@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CalendarDaysIcon, HandRaisedIcon } from "@heroicons/react/24/outline";
 
-export default function Example() {
+export default function Newsletter() {
   const [email, setEmail] = useState("");
 
   const handleSubscribe = () => {

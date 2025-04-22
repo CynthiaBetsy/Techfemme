@@ -3,8 +3,13 @@ import { Routes, Route } from "react-router-dom";
 
 import AuthModal from "./Component/AuthModal";
 import Navbar from "./Component/Navbar";
-import About from "./Component/About";
 import Courses from "./Component/Courses";
+import Hero from "./Component/Hero";
+import AboutPage from "./Component/AboutPage";
+import HowItWorks from "./Component/HowItWorks";
+import JoinCommunity from "./Component/JoinCommunity";
+import Footer from "./Component/Footer";
+import Newsletter from "./Component/Newsletter";
 
 const App: React.FC = () => {
   const [modalType, setModalType] = useState<"signin" | "signup" | null>(null);
@@ -17,7 +22,14 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/courses" element={<Courses/>} />
       </Routes>
-      <About/>
+      <Hero/>
+      <AboutPage/>
+      <Courses/>
+      <HowItWorks/>
+      <JoinCommunity/>
+      <Newsletter/>
+      <Footer/>
+
 
       {modalType && (
         <AuthModal 
