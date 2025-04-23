@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 import AboutPics from "../assets/Techfemme pic.jpg"
 
 const container = {
@@ -17,6 +18,11 @@ const item = {
 };
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const handleRegisterClick = () => {
+    // Navigate to the registration page
+    navigate("/regform");
+  };
   return (
     <section className="relative py-20 px-6 md:px-12 lg:px-24 bg-gradient-to-br from-blue-300 to-purple-100 text-white rounded-b-3xl overflow-hidden">
       <motion.div
@@ -33,16 +39,16 @@ const Hero = () => {
             Inclusive mentorship, community support, and growth for every woman.
           </p>
           <div className="flex flex-wrap gap-4 mt-6">
-            <a
-              href="#regform"
-              className="inline-flex items-center gap-2 bg-white bg-opacity-90 text-purple-700 font-semibold py-3 px-5 rounded-lg shadow-lg hover:bg-opacity-100 transition"
+            <button
+            onClick={handleRegisterClick}  // Navigate to registration page
+              className="inline-flex items-center gap-2 bg-white bg-opacity-90 text-purple-700 font-semibold py-3 px-5 rounded-lg shadow-lg hover:bg-opacity-100 transition cursor-pointer"
               aria-label="Join the Academy"
             >
               Join TechFemme <ChevronRight size={18} />
-            </a>
+            </button>
             <a
               href="#courses"
-              className="inline-flex items-center gap-2 border border-white border-opacity-80 text-white font-semibold py-3 px-5 rounded-lg hover:bg-blue-400 hover:bg-opacity-20 transition"
+              className="inline-flex items-center gap-2 border border-white border-opacity-80 text-white font-semibold py-3 px-5 rounded-lg hover:bg-blue-400 hover:bg-opacity-20 transition cursor-pointer"
               aria-label="Explore Courses"
             >
               Explore Courses <ChevronRight size={18} />
