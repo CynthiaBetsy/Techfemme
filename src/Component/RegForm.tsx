@@ -39,14 +39,14 @@ const RegistrationForm: React.FC = () => {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="max-w-3xl mx-auto p-8 bg-white bg-opacity-80 rounded-2xl shadow-lg border border-purple-200 backdrop-blur-md"
+          className="max-w-3xl mx-auto p-8 bg-blue-50 bg-opacity-80 rounded-2xl shadow-lg border border-blue-400 backdrop-blur-md"
         >
-          <h2 className="text-3xl font-semibold text-purple-700 mb-8 text-center">
+          <h2 className="text-3xl font-semibold text-blue-400 mb-8 text-center">
             TechFemme Academy Course Registration
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-purple-800 mb-1">
+              <label htmlFor="name" className="block text-sm font-medium text-blue-400 mb-1">
                 What is your name? <span className="text-red-500">*</span>
               </label>
               <input
@@ -56,13 +56,13 @@ const RegistrationForm: React.FC = () => {
                 id="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full rounded-md border border-purple-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Your full name"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-purple-800 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-blue-500 mb-1">
                 What is your email address? <span className="text-red-500">*</span>
               </label>
               <input
@@ -72,13 +72,13 @@ const RegistrationForm: React.FC = () => {
                 id="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full rounded-md border border-purple-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="you@example.com"
+                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="name@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-purple-800 mb-1">
+              <label htmlFor="phone" className="block text-sm font-medium text-blue-400 mb-1">
                 What is your phone number? <span className="text-red-500">*</span>
               </label>
               <input
@@ -88,13 +88,13 @@ const RegistrationForm: React.FC = () => {
                 id="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full rounded-md border border-purple-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="+123 456 7890"
               />
             </div>
 
             <div>
-              <label htmlFor="course" className="block text-sm font-medium text-purple-800 mb-1">
+              <label htmlFor="course" className="block text-sm font-medium text-blue-40000 mb-1">
                 Which course are you interested in? <span className="text-red-500">*</span>
               </label>
               <select
@@ -103,7 +103,7 @@ const RegistrationForm: React.FC = () => {
                 value={formData.course}
                 onChange={handleChange}
                 required
-                className="w-full rounded-md border border-purple-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-md border border-blue-400 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="" disabled>
                   Select a course
@@ -117,7 +117,7 @@ const RegistrationForm: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="occupation" className="block text-sm font-medium text-purple-800 mb-1">
+              <label htmlFor="occupation" className="block text-sm font-medium text-blue-400 mb-1">
                 What is your current occupation?
               </label>
               <input
@@ -126,14 +126,14 @@ const RegistrationForm: React.FC = () => {
                 id="occupation"
                 value={formData.occupation}
                 onChange={handleChange}
-                className="w-full rounded-md border border-purple-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 placeholder="Your occupation"
               />
             </div>
 
             <div>
               <fieldset>
-                <legend className="text-sm font-medium text-purple-800 mb-1">
+                <legend className="text-sm font-medium text-blue-400 mb-1">
                   Do you have access to the internet? <span className="text-red-500">*</span>
                 </legend>
                 <div className="flex items-center space-x-6 mt-1">
@@ -145,7 +145,7 @@ const RegistrationForm: React.FC = () => {
                       value="Yes"
                       checked={formData.internetAccess === 'Yes'}
                       onChange={handleChange}
-                      className="accent-purple-600"
+                      className="accent-blue-600"
                     />
                     Yes
                   </label>
@@ -157,7 +157,7 @@ const RegistrationForm: React.FC = () => {
                       value="No"
                       checked={formData.internetAccess === 'No'}
                       onChange={handleChange}
-                      className="accent-purple-600"
+                      className="accent-blue-600"
                     />
                     No
                   </label>
@@ -167,7 +167,7 @@ const RegistrationForm: React.FC = () => {
 
             <div>
               <fieldset>
-                <legend className="text-sm font-medium text-purple-800 mb-1">
+                <legend className="text-sm font-medium text-blue-400 mb-1">
                   Do you have access to a power supply? <span className="text-red-500">*</span>
                 </legend>
                 <div className="flex items-center space-x-6 mt-1">
@@ -179,7 +179,7 @@ const RegistrationForm: React.FC = () => {
                       value="Yes"
                       checked={formData.powerSupply === 'Yes'}
                       onChange={handleChange}
-                      className="accent-purple-600"
+                      className="accent-blue-600"
                     />
                     Yes
                   </label>
@@ -191,7 +191,7 @@ const RegistrationForm: React.FC = () => {
                       value="No"
                       checked={formData.powerSupply === 'No'}
                       onChange={handleChange}
-                      className="accent-purple-600"
+                      className="accent-blue-600"
                     />
                     No
                   </label>
@@ -200,7 +200,7 @@ const RegistrationForm: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="digitalSkills" className="block text-sm font-medium text-purple-800 mb-1">
+              <label htmlFor="digitalSkills" className="block text-sm font-medium text-blue-400 mb-1">
                 How would you rate your digital skills competency level? <span className="text-red-500">*</span>
               </label>
               <select
@@ -209,7 +209,7 @@ const RegistrationForm: React.FC = () => {
                 value={formData.digitalSkills}
                 onChange={handleChange}
                 required
-                className="w-full rounded-md border border-purple-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-md border border-blue-400 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="" disabled>
                   Select a level
@@ -221,7 +221,7 @@ const RegistrationForm: React.FC = () => {
             </div>
 
             <div className="md:col-span-2">
-              <label htmlFor="computerSkills" className="block text-sm font-medium text-purple-800 mb-1">
+              <label htmlFor="computerSkills" className="block text-sm font-medium text-blue-400 mb-1">
                 Do you have any computer-related skills?
               </label>
               <textarea
@@ -230,13 +230,13 @@ const RegistrationForm: React.FC = () => {
                 value={formData.computerSkills}
                 onChange={handleChange}
                 placeholder="Describe your skills"
-                className="w-full rounded-md border border-purple-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 resize vertical"
+                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize vertical"
                 rows={4}
               />
             </div>
 
             <div>
-              <label htmlFor="referral" className="block text-sm font-medium text-purple-800 mb-1">
+              <label htmlFor="referral" className="block text-sm font-medium text-blue-400 mb-1">
                 How did you hear about TechFemme Academy? <span className="text-red-500">*</span>
               </label>
               <select
@@ -245,7 +245,7 @@ const RegistrationForm: React.FC = () => {
                 value={formData.referral}
                 onChange={handleChange}
                 required
-                className="w-full rounded-md border border-purple-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-md border border-blue-400 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="" disabled>
                   Select an option
@@ -259,7 +259,7 @@ const RegistrationForm: React.FC = () => {
             </div>
 
             <div className="md:col-span-2">
-              <label htmlFor="additionalComments" className="block text-sm font-medium text-purple-800 mb-1">
+              <label htmlFor="additionalComments" className="block text-sm font-medium text-blue-400 mb-1">
                 Additional Comments or Questions:
               </label>
               <textarea
@@ -268,7 +268,7 @@ const RegistrationForm: React.FC = () => {
                 value={formData.additionalComments}
                 onChange={handleChange}
                 placeholder="Your message"
-                className="w-full rounded-md border border-purple-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 resize vertical"
+                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize vertical"
                 rows={4}
               />
             </div>
@@ -277,7 +277,7 @@ const RegistrationForm: React.FC = () => {
           <div className="mt-8 text-center">
             <button
               type="submit"
-              className="inline-block bg-purple-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+              className="inline-block bg-blue-400 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >
               Submit Registration
             </button>
