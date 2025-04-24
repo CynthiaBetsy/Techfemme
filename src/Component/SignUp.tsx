@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase"; // Make sure this path is correct
+import { auth } from "../firebase"; 
+import { doc, setDoc, serverTimestamp } from "firebase/firestore"; 
+import { db } from "../firebase"; 
 
 const courses = ["Frontend", "Backend", "UI/UX", "Data Science"];
 
@@ -27,22 +29,46 @@ const SignUpForm = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-
+  
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+  
     try {
-      await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = userCredential.user;
+  
+      // Create Firestore user document
+      await setDoc(doc(db, "users", user.uid), {
+        username: formData.username,
+        email: formData.email,
+        course: formData.course,
+        createdAt: serverTimestamp(),
+      });
+  
       setSuccess("Signup successful! 🎉");
       setTimeout(() => {
-        onClose(); // Closes modal
-      }, 1500); // Delay to show success message
-    } catch (err) {
-      console.error(err);
-      setError("Signup failed. Please try again.");
+        onClose();
+      }, 1500);
+    } catch (err: any) {
+      if (err.code === "auth/email-already-in-use") {
+        setError("That email is already in use. Try signing in instead.");
+      } else {
+        setError(err.message || "Signup failed. Please try again.");
+      }
     }
   };
+  
 
   return (
     <>
