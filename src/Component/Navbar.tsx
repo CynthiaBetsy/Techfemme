@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X } from 'lucide-react'; 
 import Logo from '../assets/TFALogo.png';
 
 interface NavbarProps {
@@ -7,33 +8,65 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ setShowAuthModal }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate(); // ✅ MUST be inside the function
+
+  const handleRegisterClick = () => {
+    navigate("/regform");
+  };
+
   return (
-    <nav className="bg-blue-50 shadow-md px-6 py-4 sticky top-0 z-50">
+    <nav className="bg-purple-50 shadow-md px-6 py-4 sticky top-0 z-50">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         <Link to="/" className="flex items-center">
           <img src={Logo} alt="Logo" className="h-10 w-auto" />
         </Link>
 
-        <div className="space-x-4">
-              <div className="hidden md:flex space-x-6 items-center">
-                      <Link to="/courses" className="text-gray-700 hover:text-blue-600">Courses</Link>
-                      <Link to="/dashboard" className="text-gray-700 hover:text-blue-600">Dashboard</Link>
-                      <Link to="/certification" className="text-gray-700 hover:text-blue-600">Certification</Link>
+        <button
+          className="md:hidden text-purple-600 focus:outline-none cursor-pointer"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+
+        <div className="hidden md:flex space-x-6 items-center">
+          <Link to="/courses" className="text-purple-700 hover:text-purple-400">Courses</Link>
+          <Link to="/admin" className="text-purple-700 hover:text-purple-400">Dashboard</Link>
+          <Link to="/certification" className="text-purple-700 hover:text-purple-400">Certification</Link>
           <button
             onClick={() => setShowAuthModal('signin')}
-            className="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 cursor-pointer"
+            className="px-4 py-2 border border-purple-600 text-purple-600 rounded hover:bg-purple-100 cursor-pointer"
           >
             Login
           </button>
           <button
-            onClick={() => setShowAuthModal('signup')}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer"
+            onClick={handleRegisterClick}
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-600 cursor-pointer"
           >
             Signup
           </button>
         </div>
-        </div>
       </div>
+
+      {menuOpen && (
+        <div className="md:hidden flex flex-col items-start space-y-4 mt-4 px-4">
+          <Link to="/courses" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Courses</Link>
+          <Link to="/dashboard" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+          <Link to="/certification" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Certification</Link>
+          <button
+            onClick={() => { setShowAuthModal('signin'); setMenuOpen(false); }}
+            className="w-full text-left px-4 py-2 border border-purple-600 text-purple-600 rounded hover:bg-blue-100 cursor-pointer"
+          >
+            Login
+          </button>
+          <button
+            onClick={() => { handleRegisterClick(); setMenuOpen(false); }}
+            className="w-full text-left px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-600 cursor-pointer"
+          >
+            Signup
+          </button>
+        </div>
+      )}
     </nav>
   );
 };

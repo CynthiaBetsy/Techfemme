@@ -1,12 +1,11 @@
 import React from "react";
 import { X } from "lucide-react";
 import SignInForm from "./Signin";
-import SignUpForm from "./SignUp";
 
 interface AuthModalProps {
   type: "signin" | "signup";
   onClose: () => void;
-  setModalType: React.Dispatch<React.SetStateAction<"signin" | "signup" | null>>;
+  setModalType: React.Dispatch<React.SetStateAction<"signin" | null>>;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, setModalType }) => {

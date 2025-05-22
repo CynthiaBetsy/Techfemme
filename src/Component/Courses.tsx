@@ -30,9 +30,9 @@ const Courses = () => {
   return (
     <section
       id="courses"
-      className="py-16 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto bg-purple-50 rounded-xl mt-12"
+      className="py-16 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto bg-white rounded-xl mt-0"
     >
-      <h2 className="text-3xl font-extrabold text-center text-purple-800 mb-12">
+      <h2 className="text-3xl font-extrabold text-center text-purple-500 mb-12">
         Learning Paths
       </h2>
       <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 max-w-7xl mx-auto">

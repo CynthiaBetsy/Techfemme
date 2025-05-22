@@ -24,7 +24,7 @@ const Hero = () => {
     navigate("/regform");
   };
   return (
-    <section className="relative py-20 px-6 md:px-12 lg:px-24 bg-gradient-to-br from-blue-300 to-purple-100 text-white rounded-b-3xl overflow-hidden">
+    <section className="relative py-20 px-6 md:px-12 lg:px-24 bg-gradient-to-br from-purple-400 to-pink-400 text-white rounded-b-3xl overflow-hidden">
       <motion.div
         className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-8"
         initial="hidden"
@@ -48,7 +48,7 @@ const Hero = () => {
             </button>
             <a
               href="#courses"
-              className="inline-flex items-center gap-2 border border-white border-opacity-80 text-white font-semibold py-3 px-5 rounded-lg hover:bg-blue-400 hover:bg-opacity-20 transition cursor-pointer"
+              className="inline-flex items-center gap-2 border border-white border-opacity-80 text-white font-semibold py-3 px-5 rounded-lg hover:bg-purple-300 hover:bg-opacity-20 transition cursor-pointer"
               aria-label="Explore Courses"
             >
               Explore Courses <ChevronRight size={18} />

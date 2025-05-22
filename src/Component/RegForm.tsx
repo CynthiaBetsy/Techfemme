@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { auth, firestore } from '../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
-const RegistrationForm: React.FC = () => {
+
+
+
+const RegistrationForm: React.FC <{toggleForm: () => void }>= ({toggleForm}) => {
+
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     course: '',
@@ -13,9 +22,11 @@ const RegistrationForm: React.FC = () => {
     computerSkills: '',
     referral: '',
     additionalComments: '',
+    password: '',
   });
-  console.log("Registration form is rendered");
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -24,12 +35,59 @@ const RegistrationForm: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
-    setSubmitted(true);
-  };
+    const { firstName, lastName, email, phone, course, password } = formData;
 
+    // Validate required fields
+    if (!firstName || !lastName || !email || !phone || !course) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    try {
+      // Create a new user with Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);      const user = userCredential.user;
+
+      if (user) {
+        // Save user data to Firestore
+        await setDoc(doc(firestore, 'users', user.uid), {
+          ...formData,
+          createdAt: new Date().toISOString(),
+        });
+
+        setSubmitted(true);
+        setError('');
+        navigate('/dashboard'); // Redirect to dashboard
+      }
+    } catch (error: any) {
+      console.error('Error creating user:', error);
+    
+      if (error instanceof Error && 'code' in error) {
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            setError('This email is already in use.');
+            break;
+          case 'auth/invalid-email':
+            setError('Please enter a valid email address.');
+            break;
+          case 'auth/weak-password':
+            setError('Password is too weak. Please choose a stronger password.');
+            break;
+          default:
+            setError('An error occurred while creating your account.');
+        }
+      } else {
+        setError('An unexpected error occurred.');
+      }
+    }
+  }
   return (
     <div className="min-h-screen bg-white overflow-y-auto px-4 py-12">
       {submitted ? (
@@ -39,31 +97,50 @@ const RegistrationForm: React.FC = () => {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="max-w-3xl mx-auto p-8 bg-blue-50 bg-opacity-80 rounded-2xl shadow-lg border border-blue-400 backdrop-blur-md"
+          className="max-w-3xl mx-auto p-8 bg-purple-50 bg-opacity-80 rounded-2xl shadow-lg border border-purple-400 backdrop-blur-md"
         >
-          <h2 className="text-3xl font-semibold text-blue-400 mb-8 text-center">
-            TechFemme Academy Course Registration
+          <h2 className="text-3xl font-semibold text-purple-400 mb-8 text-center">
+            Register With TechFemme
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+            {/* First Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-blue-400 mb-1">
-                What is your name? <span className="text-red-500">*</span>
+              <label htmlFor="firstName" className="block text-sm font-medium text-purple-400 mb-1">
+                First Name <span className="text-red-500">*</span>
               </label>
               <input
                 required
                 type="text"
-                name="name"
-                id="name"
-                value={formData.name}
+                name="firstName"
+                id="firstName"
+                value={formData.firstName}
                 onChange={handleChange}
-                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Your full name"
+                className="w-full rounded-md border border-purple-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Your first name"
               />
             </div>
 
+            {/* Last Name */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-blue-500 mb-1">
-                What is your email address? <span className="text-red-500">*</span>
+              <label htmlFor="lastName" className="block text-sm font-medium text-purple-400 mb-1">
+                Last Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                required
+                type="text"
+                name="lastName"
+                id="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full rounded-md border border-purple-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Your last name"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-purple-500 mb-1">
+                Email Address <span className="text-red-500">*</span>
               </label>
               <input
                 required
@@ -72,14 +149,15 @@ const RegistrationForm: React.FC = () => {
                 id="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-md border border-purple-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder="name@example.com"
               />
             </div>
 
+            {/* Phone */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-blue-400 mb-1">
-                What is your phone number? <span className="text-red-500">*</span>
+              <label htmlFor="phone" className="block text-sm font-medium text-purple-400 mb-1">
+                Phone Number <span className="text-red-500">*</span>
               </label>
               <input
                 required
@@ -88,14 +166,32 @@ const RegistrationForm: React.FC = () => {
                 id="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-md border border-purple-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder="+123 456 7890"
               />
             </div>
 
+            {/* Password */}
             <div>
-              <label htmlFor="course" className="block text-sm font-medium text-blue-40000 mb-1">
-                Which course are you interested in? <span className="text-red-500">*</span>
+              <label htmlFor="password" className="block text-sm font-medium text-purple-400 mb-1">
+                Password <span className="text-red-500">*</span>
+              </label>
+              <input
+                required
+                type="password"
+                name="password"
+                id="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full rounded-md border border-purple-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Choose a secure password"
+              />
+            </div>
+
+            {/* Course */}
+            <div>
+              <label htmlFor="course" className="block text-sm font-medium text-purple-400 mb-1">
+                Course <span className="text-red-500">*</span>
               </label>
               <select
                 name="course"
@@ -103,188 +199,40 @@ const RegistrationForm: React.FC = () => {
                 value={formData.course}
                 onChange={handleChange}
                 required
-                className="w-full rounded-md border border-blue-400 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-md border border-purple-400 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="" disabled>
                   Select a course
                 </option>
                 <option value="Web Development">Web Development</option>
-                <option value="Data Science">Data Science</option>
+                <option value="Data Science">AI optimization</option>
                 <option value="Digital Marketing">Digital Marketing</option>
                 <option value="Graphic Design">Graphic Design</option>
                 <option value="Other">Other</option>
               </select>
             </div>
-
-            <div>
-              <label htmlFor="occupation" className="block text-sm font-medium text-blue-400 mb-1">
-                What is your current occupation?
-              </label>
-              <input
-                type="text"
-                name="occupation"
-                id="occupation"
-                value={formData.occupation}
-                onChange={handleChange}
-                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                placeholder="Your occupation"
-              />
-            </div>
-
-            <div>
-              <fieldset>
-                <legend className="text-sm font-medium text-blue-400 mb-1">
-                  Do you have access to the internet? <span className="text-red-500">*</span>
-                </legend>
-                <div className="flex items-center space-x-6 mt-1">
-                  <label className="inline-flex items-center gap-2 cursor-pointer">
-                    <input
-                      required
-                      type="radio"
-                      name="internetAccess"
-                      value="Yes"
-                      checked={formData.internetAccess === 'Yes'}
-                      onChange={handleChange}
-                      className="accent-blue-600"
-                    />
-                    Yes
-                  </label>
-                  <label className="inline-flex items-center gap-2 cursor-pointer">
-                    <input
-                      required
-                      type="radio"
-                      name="internetAccess"
-                      value="No"
-                      checked={formData.internetAccess === 'No'}
-                      onChange={handleChange}
-                      className="accent-blue-600"
-                    />
-                    No
-                  </label>
-                </div>
-              </fieldset>
-            </div>
-
-            <div>
-              <fieldset>
-                <legend className="text-sm font-medium text-blue-400 mb-1">
-                  Do you have access to a power supply? <span className="text-red-500">*</span>
-                </legend>
-                <div className="flex items-center space-x-6 mt-1">
-                  <label className="inline-flex items-center gap-2 cursor-pointer">
-                    <input
-                      required
-                      type="radio"
-                      name="powerSupply"
-                      value="Yes"
-                      checked={formData.powerSupply === 'Yes'}
-                      onChange={handleChange}
-                      className="accent-blue-600"
-                    />
-                    Yes
-                  </label>
-                  <label className="inline-flex items-center gap-2 cursor-pointer">
-                    <input
-                      required
-                      type="radio"
-                      name="powerSupply"
-                      value="No"
-                      checked={formData.powerSupply === 'No'}
-                      onChange={handleChange}
-                      className="accent-blue-600"
-                    />
-                    No
-                  </label>
-                </div>
-              </fieldset>
-            </div>
-
-            <div>
-              <label htmlFor="digitalSkills" className="block text-sm font-medium text-blue-400 mb-1">
-                How would you rate your digital skills competency level? <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="digitalSkills"
-                id="digitalSkills"
-                value={formData.digitalSkills}
-                onChange={handleChange}
-                required
-                className="w-full rounded-md border border-blue-400 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="" disabled>
-                  Select a level
-                </option>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
-            </div>
-
-            <div className="md:col-span-2">
-              <label htmlFor="computerSkills" className="block text-sm font-medium text-blue-400 mb-1">
-                Do you have any computer-related skills?
-              </label>
-              <textarea
-                name="computerSkills"
-                id="computerSkills"
-                value={formData.computerSkills}
-                onChange={handleChange}
-                placeholder="Describe your skills"
-                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize vertical"
-                rows={4}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="referral" className="block text-sm font-medium text-blue-400 mb-1">
-                How did you hear about TechFemme Academy? <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="referral"
-                id="referral"
-                value={formData.referral}
-                onChange={handleChange}
-                required
-                className="w-full rounded-md border border-blue-400 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="" disabled>
-                  Select an option
-                </option>
-                <option value="Social Media">Social Media</option>
-                <option value="Friend/Family">Friend/Family</option>
-                <option value="Online Search">Online Search</option>
-                <option value="Event/Workshop">Event/Workshop</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            <div className="md:col-span-2">
-              <label htmlFor="additionalComments" className="block text-sm font-medium text-blue-400 mb-1">
-                Additional Comments or Questions:
-              </label>
-              <textarea
-                name="additionalComments"
-                id="additionalComments"
-                value={formData.additionalComments}
-                onChange={handleChange}
-                placeholder="Your message"
-                className="w-full rounded-md border border-blue-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize vertical"
-                rows={4}
-              />
-            </div>
           </div>
+
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
           <div className="mt-8 text-center">
             <button
               type="submit"
-              className="inline-block bg-blue-400 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-block bg-purple-400 text-white font-semibold px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors"
             >
-              Submit Registration
+              Submit
             </button>
           </div>
+          <p className="text-sm text-center mt-4 text-gray-600">
+          Already on TechFemme?{" "}
+          <span className="text-purple-600 cursor-pointer" onClick={toggleForm}>
+            Sign in
+          </span>
+        </p>
         </form>
       )}
     </div>
   );
 };
+
 export default RegistrationForm;

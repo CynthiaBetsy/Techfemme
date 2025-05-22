@@ -20,8 +20,8 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section className="py-16 px-6 md:px-12 lg:px-24 max-w-6xl mx-auto bg-purple-50 rounded-xl mt-12">
-      <h2 className="text-3xl font-extrabold text-purple-800 text-center mb-12">
+    <section className="relative py-20 px-6 md:px-12 lg:px-24 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl mt-0">
+      <h2 className="text-3xl font-extrabold text-white text-center mb-12">
         How It Works
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 max-w-4xl mx-auto text-center">
