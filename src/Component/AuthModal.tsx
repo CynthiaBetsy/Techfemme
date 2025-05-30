@@ -3,16 +3,10 @@ import { X } from "lucide-react";
 import SignInForm from "./Signin";
 
 interface AuthModalProps {
-  type: "signin" | "signup";
   onClose: () => void;
-  setModalType: React.Dispatch<React.SetStateAction<"signin" | null>>;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, setModalType }) => {
-  const toggleForm = () => {
-    setModalType(type === "signin" ? "signup" : "signin");
-  };
-
+const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
@@ -23,11 +17,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, setModalType }) =>
           <X />
         </button>
 
-        {type === "signin" ? (
-          <SignInForm toggleForm={toggleForm} />
-        ) : (
-          <SignUpForm toggleForm={toggleForm} onClose={onClose} />
-        )}
+        <SignInForm closeModal={onClose} />
       </div>
     </div>
   );
