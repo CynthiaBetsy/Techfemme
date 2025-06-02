@@ -14,7 +14,7 @@ function Newsletter() {
   };
 
   return (
-    <div className="relative py-20 px-6 md:px-12 lg:px-24 bg-gradient-to-br from-purple-400 to-pink-400 py-10 sm:py-14 lg:py-15">
+    <div className="relative py-10 px-6 md:px-12 lg:px-24 bg-gradient-to-br from-purple-400 to-pink-400 py-10 sm:py-14 lg:py-15">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
           <div className="max-w-xl lg:max-w-lg">

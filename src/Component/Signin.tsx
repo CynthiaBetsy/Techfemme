@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
-const SignInForm = ({ toggleForm }: { toggleForm: () => void }) => {
+const SignInForm: React.FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+const togglePassword = () => setShowPassword(prev => !prev);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +29,8 @@ const SignInForm = ({ toggleForm }: { toggleForm: () => void }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       console.log("Signed in!");
+      closeModal(); // close modal
+      navigate("/dashboard"); // redirect after login
     } catch (err: any) {
       if (err.code === "auth/user-not-found") {
         setError("No account found with this email.");
@@ -35,10 +42,6 @@ const SignInForm = ({ toggleForm }: { toggleForm: () => void }) => {
         setError("An error occurred. Please try again.");
       }
     }
-  };
-
-  const handleToggleForm = () => {
-    toggleForm();
   };
 
   return (
@@ -62,18 +65,26 @@ const SignInForm = ({ toggleForm }: { toggleForm: () => void }) => {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full px-2 py-0.5 rounded-md border-gray-300 shadow-sm"
-          />
-        </div>
+  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+    Password
+  </label>
+  <div className="relative">
+    <input
+      id="password"
+      type={showPassword ? "text" : "password"}
+      required
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      className="mt-1 w-full px-2 py-0.5 pr-10 rounded-md border-gray-300 shadow-sm"
+    />
+    <span
+      onClick={togglePassword}
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </span>
+  </div>
+</div>
 
         <button
           type="submit"
@@ -84,7 +95,13 @@ const SignInForm = ({ toggleForm }: { toggleForm: () => void }) => {
 
         <p className="text-sm text-center mt-4 text-gray-600">
           New to TechFemme?{" "}
-          <span className="text-indigo-600 cursor-pointer" onClick={handleToggleForm}>
+          <span
+            className="text-indigo-600 cursor-pointer"
+            onClick={() => {
+              closeModal(); 
+              navigate("/register");
+            }}
+          >
             Register
           </span>
         </p>

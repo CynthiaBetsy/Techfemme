@@ -17,4 +17,4 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     </button>
   );
 };
-export default Button;
+export {Button};
