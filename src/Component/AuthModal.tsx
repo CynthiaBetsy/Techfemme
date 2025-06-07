@@ -1,6 +1,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import SignInForm from "./Signin";
+import { useNavigate } from "react-router-dom";
 
 interface AuthModalProps {
   onClose: () => void;

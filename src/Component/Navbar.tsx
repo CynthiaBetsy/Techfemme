@@ -49,7 +49,7 @@ const Navbar: React.FC<NavbarProps> = ({ setShowAuthModal }) => {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden flex flex-col items-start space-y-4 mt-4 px-4">
+        <div className="md:hidden flex flex-col bg-amber-50 items-start space-y-4 mt-4 px-4">
           <Link to="/courses" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Dashboard</Link>
           <Link to="/dashboard" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Courses</Link>
           <Link to="/certification" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Certification</Link>

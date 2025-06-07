@@ -124,10 +124,10 @@ const RegistrationForm: React.FC = () => {
           <div className="grid grid-cols-1 gap-6">
             {/* Text Inputs */}
             {[
-              { label: 'First Name', name: 'firstName', type: 'text', placeholder: 'Your first name' },
-              { label: 'Last Name', name: 'lastName', type: 'text', placeholder: 'Your last name' },
+              { label: 'First Name', name: 'firstName', type: 'text', placeholder: 'first name' },
+              { label: 'Last Name', name: 'lastName', type: 'text', placeholder: 'last name' },
               { label: 'Email Address', name: 'email', type: 'email', placeholder: 'name@example.com' },
-              { label: 'Phone Number', name: 'phone', type: 'tel', placeholder: '+123 456 7890' },
+              { label: 'Phone Number', name: 'phone', type: 'tel', placeholder: '+123 903 456 7890' },
             ].map(({ label, name, type, placeholder }) => (
               <div key={name}>
                 <label htmlFor={name} className="block text-sm font-medium text-purple-400 mb-1">
