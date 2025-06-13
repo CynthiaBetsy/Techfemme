@@ -73,19 +73,24 @@ const RegistrationForm: React.FC = () => {
 
       setSubmitted(true);
       navigate('/dashboard');
-    } catch (err: any) {
-      switch (err.code) {
-        case 'auth/email-already-in-use':
-          setError('This email is already in use.');
-          break;
-        case 'auth/invalid-email':
-          setError('Please enter a valid email address.');
-          break;
-        case 'auth/weak-password':
-          setError('Password is too weak.');
-          break;
-        default:
-          setError('An error occurred. Please try again.');
+    } catch (err: unknown) {
+      if (typeof err === 'object' && err !== null && 'code' in err) {
+        const errorWithCode = err as { code: string };
+        switch (errorWithCode.code) {
+          case 'auth/email-already-in-use':
+            setError('This email is already in use.');
+            break;
+          case 'auth/invalid-email':
+            setError('Please enter a valid email address.');
+            break;
+          case 'auth/weak-password':
+            setError('Password is too weak.');
+            break;
+          default:
+            setError('An error occurred. Please try again.');
+        }
+      } else {
+        setError('An error occurred. Please try again.');
       }
     }
   };
@@ -93,10 +98,10 @@ const RegistrationForm: React.FC = () => {
   return (
     <div className="min-h-screen bg-white px-4 py-12 relative overflow-y-auto">
       {showSignInModal && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full relative">
             <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+          className="absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer"
               onClick={() => setShowSignInModal(false)}
               aria-label="Close sign in modal"
             >
@@ -203,7 +208,7 @@ const RegistrationForm: React.FC = () => {
           <div className="mt-8 text-center">
             <button
               type="submit"
-              className="inline-block bg-purple-400 text-white font-semibold px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+              className="inline-block bg-purple-400 text-white font-semibold px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors cursor-pointer"
             >
               Submit
             </button>

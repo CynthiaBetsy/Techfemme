@@ -1,10 +1,12 @@
 import React from "react";
 import { X } from "lucide-react";
 import SignInForm from "./Signin";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
-interface AuthModalProps {
+export interface AuthModalProps {
+  type: "signin" | null;
   onClose: () => void;
+  setModalType: React.Dispatch<React.SetStateAction<"signin" | null>>;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {

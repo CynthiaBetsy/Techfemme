@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-
-import AuthModal from "./Component/AuthModal";
+import AuthModal from "./Component/AuthModal"; 
 import Navbar from "./Component/Navbar";
 import RegistrationForm from "./Component/RegForm";
 import Dashboard from "./Component/Dashboard";
 import HomePage from "./Component/HomePage";
 import PrivateRoute from "./Component/PrivateRoutes";
 
-// Define modal type for better type safety
+// Type for modal
 type ModalType = "signin" | null;
 
 const App: React.FC = () => {
@@ -16,20 +15,24 @@ const App: React.FC = () => {
 
   const closeModal = () => setModalType(null);
 
+  const handleShowAuthModal = (type: "signin" | "signup") => {
+    setModalType(type === "signin" ? "signin" : null);
+  };
+
   return (
     <>
-      <Navbar setShowAuthModal={setModalType} />
+      <Navbar setShowAuthModal={handleShowAuthModal} />
 
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/regform" element={<RegistrationForm />} />
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             <PrivateRoute>
               <Dashboard />
             </PrivateRoute>
-          } 
+          }
         />
       </Routes>
 

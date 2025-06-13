@@ -4,21 +4,21 @@ const paths = [
     description:
       "Build engaging user interfaces with HTML, CSS, JavaScript, and React.",
   },
-  {
-    title: "Backend Development",
-    description:
-      "Master server-side programming, databases, and APIs with Node.js and more.",
-  },
+  // {
+  //   title: "Backend Development",
+  //   description:
+  //     "Master server-side programming, databases, and APIs with Node.js and more.",
+  // },
   {
     title: "Product Design",
     description:
       "Learn to create intuitive and beautiful user experiences and interfaces.",
   },
-  {
-    title: "Data Analytics",
-    description:
-      "Analyze and visualize data to make data-driven decisions using Python and SQL.",
-  },
+  // {
+  //   title: "Data Analytics",
+  //   description:
+  //     "Analyze and visualize data to make data-driven decisions using Python and SQL.",
+  // },
   {
     title: "Tech Career Prep",
     description:
@@ -35,7 +35,7 @@ const Courses = () => {
       <h2 className="text-3xl font-extrabold text-center text-purple-500 mb-12">
         Learning Paths
       </h2>
-      <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 max-w-7xl mx-auto">
+      <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 max-w-7xl mx-auto">
         {paths.map(({ title, description }) => (
           <div
             key={title}
