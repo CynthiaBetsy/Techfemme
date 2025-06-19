@@ -29,15 +29,25 @@ const togglePassword = () => setShowPassword(prev => !prev);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       console.log("Signed in!");
-      closeModal(); // close modal
-      navigate("/dashboard"); // redirect after login
-    } catch (err: any) {
-      if (err.code === "auth/user-not-found") {
-        setError("No account found with this email.");
-      } else if (err.code === "auth/wrong-password") {
-        setError("Incorrect password. Please try again.");
-      } else if (err.code === "auth/invalid-email") {
-        setError("Invalid email format.");
+      closeModal();  
+      navigate("/dashboard");  
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        typeof (err as { code: string }).code === "string"
+      ) {
+        const code = (err as { code: string }).code;
+        if (code === "auth/user-not-found") {
+          setError("No account found with this email.");
+        } else if (code === "auth/wrong-password") {
+          setError("Incorrect password. Please try again.");
+        } else if (code === "auth/invalid-email") {
+          setError("Invalid email format.");
+        } else {
+          setError("An error occurred. Please try again.");
+        }
       } else {
         setError("An error occurred. Please try again.");
       }
@@ -99,7 +109,7 @@ const togglePassword = () => setShowPassword(prev => !prev);
             className="text-indigo-600 cursor-pointer"
             onClick={() => {
               closeModal(); 
-              navigate("/register");
+              navigate("/regform");
             }}
           >
             Register
