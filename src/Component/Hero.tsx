@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
-import AboutPics from "../assets/Techfemme pic.jpg"
+import { useNavigate } from "react-router-dom";
+import AboutPics from "../assets/Techfemme pic.jpg";
 
 const container = {
   hidden: {},
@@ -10,19 +10,26 @@ const container = {
       staggerChildren: 0.3,
     },
   },
-};
+} as const;
 
 const item = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { ease: "easeOut", duration: 0.8 } },
-};
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      ease: "easeOut" as const,
+      duration: 0.8,
+    },
+  },
+} as const;
 
 const Hero = () => {
   const navigate = useNavigate();
   const handleRegisterClick = () => {
-    // Navigate to the registration page
     navigate("/regform");
   };
+
   return (
     <section className="relative py-20 px-6 md:px-12 lg:px-24 bg-gradient-to-br from-purple-400 to-pink-400 text-white rounded-b-3xl overflow-hidden">
       <motion.div
@@ -40,7 +47,7 @@ const Hero = () => {
           </p>
           <div className="flex flex-wrap gap-4 mt-6">
             <button
-            onClick={handleRegisterClick}  // Navigate to registration page
+              onClick={handleRegisterClick}
               className="inline-flex items-center gap-2 bg-white bg-opacity-90 text-purple-700 font-semibold py-3 px-5 rounded-lg shadow-lg hover:bg-opacity-100 transition cursor-pointer"
               aria-label="Join the Academy"
             >
@@ -55,11 +62,7 @@ const Hero = () => {
             </a>
           </div>
         </motion.div>
-        <motion.div
-          className="max-w-lg w-full"
-          variants={item}
-          aria-hidden="true"
-        >
+        <motion.div className="max-w-lg w-full" variants={item} aria-hidden="true">
           <img
             src={AboutPics}
             alt="Diverse women coding collaboratively"
