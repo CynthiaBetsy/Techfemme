@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react'; 
-import Logo from '../assets/TFALogo.png';
+import Logo from '../assets/Logo.TF.jpg';
 
 interface NavbarProps {
   setShowAuthModal: (type: 'signin' | 'signup') => void;
@@ -19,7 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({ setShowAuthModal }) => {
     <nav className="bg-purple-50 shadow-md px-6 py-4 h-18 left-0 sticky w-full top-0 z-50">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         <Link to="/" className="flex items-center">
-          <img src={Logo} alt="Logo" className="h-13.5 w-15" />
+          <img src={Logo} alt="Logo" className="h-14 w-30" />
         </Link>
 
         <button
