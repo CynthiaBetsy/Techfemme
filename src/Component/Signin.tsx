@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
 
 const SignInForm: React.FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const [email, setEmail] = useState("");
@@ -10,7 +11,7 @@ const SignInForm: React.FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-const togglePassword = () => setShowPassword(prev => !prev);
+  const togglePassword = () => setShowPassword(prev => !prev);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,11 +28,38 @@ const togglePassword = () => setShowPassword(prev => !prev);
     }
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        setError("User profile not found. Please contact support.");
+        return;
+      }
+
+      const userData = userDocSnap.data();
+
+      localStorage.setItem("user", JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        name: userData.firstName + " " + userData.lastName,
+        phone: userData.phone,
+        occupation: userData.occupation || "",
+        avatar: userData.avatar || "",
+        joinDate: userData.createdAt || new Date().toISOString(),
+        streak: userData.streak || 0,
+        totalHours: userData.totalHours || 0,
+        certificates: userData.certificates || 0,
+        enrolledCourses: userData.enrolledCourses || [],
+      }));
+
       console.log("Signed in!");
-      closeModal();  
-      navigate("/dashboard");  
+      closeModal();
+      navigate("/dashboard");
     } catch (err: unknown) {
+      console.error("Sign-in error:", err);
       if (
         typeof err === "object" &&
         err !== null &&
@@ -75,26 +103,26 @@ const togglePassword = () => setShowPassword(prev => !prev);
         </div>
 
         <div>
-  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-    Password
-  </label>
-  <div className="relative">
-    <input
-      id="password"
-      type={showPassword ? "text" : "password"}
-      required
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="mt-1 w-full px-2 py-0.5 pr-10 rounded-md border-gray-300 shadow-sm"
-    />
-    <span
-      onClick={togglePassword}
-      className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
-    >
-      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-    </span>
-  </div>
-</div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 w-full px-2 py-0.5 pr-10 rounded-md border-gray-300 shadow-sm"
+            />
+            <span
+              onClick={togglePassword}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </span>
+          </div>
+        </div>
 
         <button
           type="submit"
@@ -108,7 +136,7 @@ const togglePassword = () => setShowPassword(prev => !prev);
           <span
             className="text-indigo-600 cursor-pointer"
             onClick={() => {
-              closeModal(); 
+              closeModal();
               navigate("/regform");
             }}
           >
