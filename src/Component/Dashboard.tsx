@@ -95,7 +95,7 @@ const CourseCard = ({ course }: { course: Course }) => (
 );
 
 const Dashboard: React.FC = () => {
-  // Safely parse user from localStorage and provide fallback types
+  // Simulating user data retrieval from localStorage
   const user: User | null = (() => {
     try {
       const data = localStorage.getItem("user");
