@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import SignInForm from './Signin';
 import { Eye, EyeOff } from 'lucide-react';
+import emailjs from 'emailjs-com';
 
 interface FormData {
   firstName: string;
@@ -60,7 +61,7 @@ const RegistrationForm: React.FC = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      await setDoc(doc(db, 'users', user.uid), {
+      const userData = {
         firstName,
         lastName,
         email,
@@ -69,7 +70,44 @@ const RegistrationForm: React.FC = () => {
         uid: user.uid,
         createdAt: new Date().toISOString(),
         role: 'student',
-      });
+        streak: 0,
+        totalHours: 0,
+        certificates: 0,
+        enrolledCourses: [],
+        avatar: '',
+      };
+
+      await setDoc(doc(db, 'users', user.uid), userData);
+
+      // Send admin notification
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_ADMIN_TEMPLATE_ID,
+        { firstName, lastName, email, phone, course, createdAt: new Date().toLocaleString() },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+
+      // Send welcome email to user
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        { firstName, email },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+
+      localStorage.setItem("user", JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        name: `${firstName} ${lastName}`,
+        phone,
+        occupation: course,
+        avatar: '',
+        joinDate: userData.createdAt,
+        streak: 0,
+        totalHours: 0,
+        certificates: 0,
+        enrolledCourses: [],
+      }));
 
       setSubmitted(true);
       navigate('/dashboard');
@@ -98,10 +136,10 @@ const RegistrationForm: React.FC = () => {
   return (
     <div className="min-h-screen bg-white px-4 py-12 relative overflow-y-auto">
       {showSignInModal && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full relative">
             <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer"
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer"
               onClick={() => setShowSignInModal(false)}
               aria-label="Close sign in modal"
             >

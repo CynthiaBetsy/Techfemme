@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import AuthModal from "./Component/AuthModal"; 
+import AuthModal from "./Component/AuthModal";
 import Navbar from "./Component/Navbar";
 import RegistrationForm from "./Component/RegForm";
 import Dashboard from "./Component/Dashboard";
