@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import SignInForm from './Signin';
 import { Eye, EyeOff } from 'lucide-react';
+import { sendWelcomeEmail } from '../lib/sendWelcomeEmail';
 
 interface FormData {
   firstName: string;
@@ -31,13 +32,14 @@ const RegistrationForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-  const togglePassword = () => setShowPassword((prev) => !prev);
+
+  const togglePassword = () => setShowPassword(prev => !prev);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,16 +62,29 @@ const RegistrationForm: React.FC = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      await setDoc(doc(db, 'users', user.uid), {
-        firstName,
-        lastName,
+      const userData = {
+        firstname: firstName,
+        lastname: lastName,
         email,
         phone,
-        course,
+        course: course,
         uid: user.uid,
         createdAt: new Date().toISOString(),
         role: 'student',
-      });
+        avatar: '',
+        occupation: '',
+        joinDate: new Date().toISOString(),
+        streak: 0,
+        totalHours: 0,
+        certificates: 0,
+        enrolledCourses: [course],
+      };
+
+      await setDoc(doc(db, 'users', user.uid), userData);
+      await sendWelcomeEmail(email, firstName);
+
+      // Save to localStorage to make dashboard load user immediately
+      localStorage.setItem('user', JSON.stringify(userData));
 
       setSubmitted(true);
       navigate('/dashboard');
@@ -98,10 +113,10 @@ const RegistrationForm: React.FC = () => {
   return (
     <div className="min-h-screen bg-white px-4 py-12 relative overflow-y-auto">
       {showSignInModal && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full relative">
             <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer"
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer"
               onClick={() => setShowSignInModal(false)}
               aria-label="Close sign in modal"
             >
@@ -127,7 +142,6 @@ const RegistrationForm: React.FC = () => {
           </h2>
 
           <div className="grid grid-cols-1 gap-6">
-            {/* Text Inputs */}
             {[
               { label: 'First Name', name: 'firstName', type: 'text', placeholder: 'first name' },
               { label: 'Last Name', name: 'lastName', type: 'text', placeholder: 'last name' },
@@ -151,7 +165,7 @@ const RegistrationForm: React.FC = () => {
               </div>
             ))}
 
-            {/* Password Input with Toggle */}
+            {/* Password */}
             <div className="relative">
               <label htmlFor="password" className="block text-sm font-medium text-purple-400 mb-1">
                 Password <span className="text-red-500">*</span>
@@ -174,7 +188,7 @@ const RegistrationForm: React.FC = () => {
               </span>
             </div>
 
-            {/* Course Selection */}
+            {/* Course */}
             <div>
               <label htmlFor="course" className="block text-sm font-medium text-purple-400 mb-1">
                 Course <span className="text-red-500">*</span>
@@ -187,9 +201,7 @@ const RegistrationForm: React.FC = () => {
                 required
                 className="w-full rounded-md border border-purple-400 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
-                <option value="" disabled>
-                  Select a course
-                </option>
+                <option value="" disabled>Select a course</option>
                 <option value="Web Development">Web Development</option>
                 <option value="AI Optimization">AI Optimization</option>
                 <option value="Digital Marketing">Digital Marketing</option>
