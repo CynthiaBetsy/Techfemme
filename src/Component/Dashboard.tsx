@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Co
 import { Avatar, AvatarFallback, AvatarImage } from "../Component/ui/Avatar";
 import { Button } from "../Component/ui/Button";
 import { Progress } from "../Component/ui/Progress";
-import { TabsContent } from "../Component/ui/Tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../Component/ui/Tabs";
 import Badge from "../Component/ui/badge";
 import { Calendar, BookOpen, Award } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -37,7 +37,6 @@ interface User {
 
 const cardClass = "bg-white/80 backdrop-blur-sm border-purple-200";
 const textPurple = "text-purple-800";
-
 
 const CourseCard = ({ course }: { course: Course }) => (
   <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.4 }}>
@@ -124,80 +123,109 @@ const Dashboard: React.FC = () => {
   if (!user) return <p>Loading...</p>;
 
   return (
-    <motion.div>
-      <div className="mb-4 flex items-center space-x-4">
-        <Avatar className="h-20 w-20">
+  <motion.div className="max-w-6xl mx-auto px-4 py-8">
+    {/* Profile Section */}
+    <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
+      <div className="relative">
+        <Avatar className="h-24 w-24 ring-4 ring-purple-200 shadow-md">
           <AvatarImage src={user.avatar || undefined} alt={user.firstname} />
           <AvatarFallback>{user.firstname?.[0]}</AvatarFallback>
         </Avatar>
         {isEditing && (
-          <input type="file" accept="image/*" onChange={handleAvatarChange} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarChange}
+            className="absolute top-full left-0 mt-2 text-sm"
+          />
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium text-purple-700">Email</label>
-          <p className="text-purple-600">{user.email}</p>
+          <label className="text-xs font-semibold text-purple-700">Email</label>
+          <p className="text-sm text-purple-600">{user.email}</p>
         </div>
         <div>
-          <label className="text-sm font-medium text-purple-700">Phone</label>
+          <label className="text-xs font-semibold text-purple-700">Phone</label>
           {isEditing ? (
             <input
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="border border-purple-300 rounded p-2 w-full"
+              className="mt-1 border border-purple-300 rounded p-2 w-full text-sm"
             />
           ) : (
-            <p className="text-purple-600">{user.phone}</p>
+            <p className="text-sm text-purple-600">{user.phone}</p>
           )}
         </div>
         <div>
-          <label className="text-sm font-medium text-purple-700">First Name</label>
+          <label className="text-xs font-semibold text-purple-700">First Name</label>
           {isEditing ? (
             <input
               name="firstname"
               value={formData.firstname}
               onChange={handleChange}
-              className="border border-purple-300 rounded p-2 w-full"
+              className="mt-1 border border-purple-300 rounded p-2 w-full text-sm"
             />
           ) : (
-            <p className="text-purple-600">{user.firstname}</p>
+            <p className="text-sm text-purple-600">{user.firstname}</p>
           )}
         </div>
         <div>
-          <label className="text-sm font-medium text-purple-700">Member Since</label>
-          <p className="text-purple-600">{new Date(user.joinDate).toLocaleDateString()}</p>
+          <label className="text-xs font-semibold text-purple-700">Member Since</label>
+          <p className="text-sm text-purple-600">{new Date(user.joinDate).toLocaleDateString()}</p>
         </div>
       </div>
+    </div>
 
+    <div className="flex justify-end mb-6">
       {isEditing ? (
-        <Button className="bg-green-600 hover:bg-green-700 text-white mt-4" onClick={handleSave}>
-          Save Changes
+        <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={handleSave}>
+          Save Profile
         </Button>
       ) : (
-        <Button className="bg-purple-600 hover:bg-purple-700 text-white mt-4" onClick={() => setIsEditing(true)}>
+        <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => setIsEditing(true)}>
           Edit Profile
         </Button>
       )}
+    </div>
 
-      <Card className={`${cardClass} mt-6`}>
-        <CardHeader><CardTitle className={textPurple}>Quick Actions</CardTitle></CardHeader>
-        <CardContent className="space-y-3">
-          {[{ icon: <BookOpen className="mr-2 h-4 w-4" />, label: "Browse New Courses" },
-            { icon: <Calendar className="mr-2 h-4 w-4" />, label: "Schedule Study Time" },
-            { icon: <Award className="mr-2 h-4 w-4" />, label: "View Certificates" }
-          ].map((action, idx) => (
-            <Button key={idx} variant="outline" className="w-full justify-start border-purple-300 text-purple-700 hover:bg-purple-50 cursor-pointer">
-              {action.icon}{action.label}
-            </Button>
-          ))}
-        </CardContent>
-      </Card>
+    {/* Quick Actions */}
+    <Card className={`${cardClass} shadow-sm mb-10`}>
+      <CardHeader>
+        <CardTitle className={textPurple}>Quick Actions</CardTitle>
+      </CardHeader>
+      <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { icon: <BookOpen className="h-5 w-5" />, label: "Browse New Courses" },
+          { icon: <Calendar className="h-5 w-5" />, label: "Schedule Study Time" },
+          { icon: <Award className="h-5 w-5" />, label: "View Certificates" }
+        ].map((action, idx) => (
+          <Button
+            key={idx}
+            variant="outline"
+            className="flex items-center gap-2 w-full border-purple-300 text-purple-700 hover:bg-purple-50"
+          >
+            {action.icon}
+            <span>{action.label}</span>
+          </Button>
+        ))}
+      </CardContent>
+    </Card>
+
+    {/* Tabs Section */}
+    <Tabs defaultValue="courses" className="w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold text-purple-800">Your Progress</h2>
+        <TabsList className="bg-purple-50 rounded-md p-1">
+          <TabsTrigger value="courses" className="px-4 py-1 text-sm">Courses</TabsTrigger>
+          <TabsTrigger value="achievements" className="px-4 py-1 text-sm">Achievements</TabsTrigger>
+        </TabsList>
+      </div>
 
       <TabsContent value="courses">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {courses.length > 0 ? (
             courses.map((course) => <CourseCard key={course.id} course={course} />)
           ) : (
@@ -210,15 +238,23 @@ const Dashboard: React.FC = () => {
 
       <TabsContent value="achievements">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[{ title: "First Course Completed", description: "Completed Graphic Design course", earned: true },
-            { title: "Week Warrior", description: "Complete 7 days of learning", earned: false },
+          {[
+            { title: "First Course Completed", description: "Completed Graphic Design course", earned: true },
+            { title: "Week Warrior", description: "Completed 7 days of learning", earned: false },
             { title: "Tech Master", description: "Complete 5 technical courses", earned: false }
           ].map((item, idx) => (
-            <Card key={idx} className={`bg-white/80 backdrop-blur-sm border-purple-200 ${item.earned ? "" : "opacity-50"}`}>
+            <Card
+              key={idx}
+              className={`bg-white/80 backdrop-blur-sm border-purple-200 ${item.earned ? "" : "opacity-60"}`}
+            >
               <CardContent className="p-6 text-center">
                 <Award className={`h-12 w-12 mx-auto mb-4 ${item.earned ? "text-yellow-500" : "text-gray-400"}`} />
-                <h3 className={`font-semibold mb-2 ${item.earned ? "text-purple-800" : "text-gray-600"}`}>{item.title}</h3>
-                <p className={`text-sm ${item.earned ? "text-purple-600" : "text-gray-500"}`}>{item.description}</p>
+                <h3 className={`font-semibold mb-2 ${item.earned ? "text-purple-800" : "text-gray-600"}`}>
+                  {item.title}
+                </h3>
+                <p className={`text-sm ${item.earned ? "text-purple-600" : "text-gray-500"}`}>
+                  {item.description}
+                </p>
                 <Badge className={`mt-2 ${item.earned ? "bg-yellow-100 text-yellow-800" : "bg-gray-200 text-gray-600"}`}>
                   {item.earned ? "Earned" : "Locked"}
                 </Badge>
@@ -227,8 +263,10 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
       </TabsContent>
-    </motion.div>
-  );
+    </Tabs>
+  </motion.div>
+);
+
 };
 
 export default Dashboard;
