@@ -8,9 +8,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "../Component/ui/Tabs";
 import Badge from "../Component/ui/badge";
 import { Calendar, BookOpen, Award } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../firebase";
+import { toast } from "sonner";
 
 interface Course {
   id: string;
@@ -25,14 +26,17 @@ interface Course {
 interface User {
   firstname: string;
   email: string;
-  phone: string;
+  phone:number;
+  lastname: string;
+  country: string;               
   avatar?: string;
   occupation: string;
   joinDate: string;
   streak: number;
   totalHours: number;
   certificates: number;
-  enrolledCourses: Course[];
+  enrolledCourses: string;
+  studySchedule?: string;
 }
 
 const cardClass = "bg-white/80 backdrop-blur-sm border-purple-200";
@@ -70,10 +74,8 @@ const CourseCard = ({ course }: { course: Course }) => (
 
 const Dashboard: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ firstname: "", phone: "" });
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
+const [scheduleTime, setScheduleTime] = useState<string>("");
 
   useEffect(() => {
     const auth = getAuth();
@@ -83,190 +85,192 @@ const Dashboard: React.FC = () => {
         if (userDoc.exists()) {
           const userData = userDoc.data() as User;
           setUser(userData);
-          setFormData({ firstname: userData.firstname, phone: userData.phone });
-          setCourses(userData.enrolledCourses || []);
+          // If enrolledCourses is a string of IDs, fetch course details here; for now, set to empty array if not an array
+          setCourses(Array.isArray(userData.enrolledCourses) ? userData.enrolledCourses : []);
+          setScheduleTime(userData.studySchedule || "");
+
         }
       }
     });
     return () => unsubscribe();
   }, []);
+const handleSchedule = async () => {
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setAvatarFile(e.target.files[0]);
+  if (currentUser && scheduleTime) {
+    try {
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        studySchedule: scheduleTime,
+      });
+      toast.success("Study time scheduled!");
+    } catch {
+      toast.error("Failed to schedule study time");
     }
-  };
-
-  const handleSave = async () => {
+  }
+};
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const auth = getAuth();
     const currentUser = auth.currentUser;
-    if (currentUser && user) {
-      let avatarUrl = user.avatar;
-      if (avatarFile) {
+    if (e.target.files?.[0] && currentUser) {
+      try {
+        const file = e.target.files[0];
         const storage = getStorage();
         const avatarRef = ref(storage, `avatars/${currentUser.uid}`);
-        await uploadBytes(avatarRef, avatarFile);
-        avatarUrl = await getDownloadURL(avatarRef);
-      }
+        await uploadBytes(avatarRef, file);
+        const avatarUrl = await getDownloadURL(avatarRef);
 
-      const updatedUser = { ...user, ...formData, avatar: avatarUrl };
-      await setDoc(doc(db, "users", currentUser.uid), updatedUser);
-      setUser(updatedUser);
-      setIsEditing(false);
+        const updatedUser = { ...user!, avatar: avatarUrl };
+        await setDoc(doc(db, "users", currentUser.uid), updatedUser);
+        setUser(updatedUser);
+        toast.success("Profile picture updated successfully!");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to upload profile picture.");
+      }
     }
   };
 
   if (!user) return <p>Loading...</p>;
 
   return (
-  <motion.div className="max-w-6xl mx-auto px-4 py-8">
-    {/* Profile Section */}
-    <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
-      <div className="relative">
-        <Avatar className="h-24 w-24 ring-4 ring-purple-200 shadow-md">
-          <AvatarImage src={user.avatar || undefined} alt={user.firstname} />
-          <AvatarFallback>{user.firstname?.[0]}</AvatarFallback>
-        </Avatar>
-        {isEditing && (
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleAvatarChange}
-            className="absolute top-full left-0 mt-2 text-sm"
-          />
-        )}
+    <motion.div className="max-w-6xl mx-auto px-4 py-8 dark:bg-gray-900 dark:text-white min-h-screen transition-colors duration-300">
+      {/* Greeting & Avatar Section */}
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
+        <div className="relative group">
+          <Avatar className="h-24 w-24 ring-4 ring-purple-300 dark:ring-purple-600 shadow-md">
+            <AvatarImage src={user.avatar || undefined} alt={user.firstname} />
+            <AvatarFallback>{user.firstname?.[0]}</AvatarFallback>
+          </Avatar>
+
+          {/* Hover Edit Overlay */}
+          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-full cursor-pointer">
+            <label htmlFor="avatar-upload" className="text-sm text-white font-medium cursor-pointer">Change</label>
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+          </div>
+        </div>
+
+        {/* Greeting */}
+        <div className="flex-1 space-y-2">
+          <h1 className="text-2xl font-bold text-purple-800 dark:text-purple-200">
+            Welcome, {user.firstname} 👋
+          </h1>
+          <h3 className="text-2xl font-bold text-purple-800 dark:text-purple-200">
+             {user.enrolledCourses} 
+          </h3>
+          <p className="text-sm text-purple-600 dark:text-purple-400">
+            Member since {new Date(user.joinDate).toLocaleDateString()}
+          </p>
+        </div>
       </div>
 
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="text-xs font-semibold text-purple-700">Email</label>
-          <p className="text-sm text-purple-600">{user.email}</p>
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-purple-700">Phone</label>
-          {isEditing ? (
-            <input
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="mt-1 border border-purple-300 rounded p-2 w-full text-sm"
-            />
-          ) : (
-            <p className="text-sm text-purple-600">{user.phone}</p>
-          )}
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-purple-700">First Name</label>
-          {isEditing ? (
-            <input
-              name="firstname"
-              value={formData.firstname}
-              onChange={handleChange}
-              className="mt-1 border border-purple-300 rounded p-2 w-full text-sm"
-            />
-          ) : (
-            <p className="text-sm text-purple-600">{user.firstname}</p>
-          )}
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-purple-700">Member Since</label>
-          <p className="text-sm text-purple-600">{new Date(user.joinDate).toLocaleDateString()}</p>
-        </div>
+      {/* Quick Actions */}
+      <Card className={`${cardClass} shadow-sm mb-10`}>
+  <CardHeader>
+    <CardTitle className={textPurple}>Quick Actions</CardTitle>
+  </CardHeader>
+  <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    
+    {/* Browse New Courses */}
+    <Button
+      variant="outline"
+      className="flex items-center gap-2 w-full border-purple-300 text-purple-700 hover:bg-purple-50"
+    >
+      <BookOpen className="h-5 w-5" />
+      <span>Browse New Courses</span>
+    </Button>
+
+    {/* Schedule Study Time */}
+    <div className="flex flex-col gap-2 border border-purple-300 rounded-md p-3 text-purple-700">
+      <div className="flex items-center gap-2">
+        <Calendar className="h-5 w-5" />
+        <label htmlFor="studyTime" className="text-sm font-medium">Schedule Study Time</label>
       </div>
+      <input
+        id="studyTime"
+        type="datetime-local"
+        value={scheduleTime}
+        onChange={(e) => setScheduleTime(e.target.value)}
+        className="rounded border border-purple-200 p-1 text-sm"
+      />
+      <Button
+        onClick={handleSchedule}
+        className="bg-purple-600 text-white hover:bg-purple-700"
+      >
+        Schedule
+      </Button>
     </div>
 
-    <div className="flex justify-end mb-6">
-      {isEditing ? (
-        <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={handleSave}>
-          Save Profile
-        </Button>
-      ) : (
-        <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => setIsEditing(true)}>
-          Edit Profile
-        </Button>
-      )}
-    </div>
+    {/* View Certificates */}
+    <Button
+      variant="outline"
+      className="flex items-center gap-2 w-full border-purple-300 text-purple-700 hover:bg-purple-50"
+    >
+      <Award className="h-5 w-5" />
+      <span>View Certificates</span>
+    </Button>
 
-    {/* Quick Actions */}
-    <Card className={`${cardClass} shadow-sm mb-10`}>
-      <CardHeader>
-        <CardTitle className={textPurple}>Quick Actions</CardTitle>
-      </CardHeader>
-      <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {[
-          { icon: <BookOpen className="h-5 w-5" />, label: "Browse New Courses" },
-          { icon: <Calendar className="h-5 w-5" />, label: "Schedule Study Time" },
-          { icon: <Award className="h-5 w-5" />, label: "View Certificates" }
-        ].map((action, idx) => (
-          <Button
-            key={idx}
-            variant="outline"
-            className="flex items-center gap-2 w-full border-purple-300 text-purple-700 hover:bg-purple-50"
-          >
-            {action.icon}
-            <span>{action.label}</span>
-          </Button>
-        ))}
-      </CardContent>
-    </Card>
+  </CardContent>
+</Card>
 
-    {/* Tabs Section */}
-    <Tabs defaultValue="courses" className="w-full">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-purple-800">Your Progress</h2>
-        <TabsList className="bg-purple-50 rounded-md p-1">
-          <TabsTrigger value="courses" className="px-4 py-1 text-sm">Courses</TabsTrigger>
-          <TabsTrigger value="achievements" className="px-4 py-1 text-sm">Achievements</TabsTrigger>
-        </TabsList>
-      </div>
-
-      <TabsContent value="courses">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {courses.length > 0 ? (
-            courses.map((course) => <CourseCard key={course.id} course={course} />)
-          ) : (
-            <div className="col-span-full text-center text-purple-500 py-8">
-              You are not enrolled in any courses yet.
-            </div>
-          )}
+      {/* Tabs Section */}
+      <Tabs defaultValue="courses" className="w-full">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-purple-800">Your Progress</h2>
+          <TabsList className="bg-purple-500 rounded-md p-1">
+            <TabsTrigger value="courses" className="px-4 py-1 text-sm cursor-pointer ">Courses</TabsTrigger>
+            <TabsTrigger value="achievements" className="px-4 py-1 text-sm cursor-pointer">Achievements</TabsTrigger>
+          </TabsList>
         </div>
-      </TabsContent>
 
-      <TabsContent value="achievements">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            { title: "First Course Completed", description: "Completed Graphic Design course", earned: true },
-            { title: "Week Warrior", description: "Completed 7 days of learning", earned: false },
-            { title: "Tech Master", description: "Complete 5 technical courses", earned: false }
-          ].map((item, idx) => (
-            <Card
-              key={idx}
-              className={`bg-white/80 backdrop-blur-sm border-purple-200 ${item.earned ? "" : "opacity-60"}`}
-            >
-              <CardContent className="p-6 text-center">
-                <Award className={`h-12 w-12 mx-auto mb-4 ${item.earned ? "text-yellow-500" : "text-gray-400"}`} />
-                <h3 className={`font-semibold mb-2 ${item.earned ? "text-purple-800" : "text-gray-600"}`}>
-                  {item.title}
-                </h3>
-                <p className={`text-sm ${item.earned ? "text-purple-600" : "text-gray-500"}`}>
-                  {item.description}
-                </p>
-                <Badge className={`mt-2 ${item.earned ? "bg-yellow-100 text-yellow-800" : "bg-gray-200 text-gray-600"}`}>
-                  {item.earned ? "Earned" : "Locked"}
-                </Badge>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </TabsContent>
-    </Tabs>
-  </motion.div>
-);
+        <TabsContent value="courses">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {courses.length > 0 ? (
+              courses.map((course) => <CourseCard key={course.id} course={course} />)
+            ) : (
+              <div className="col-span-full text-center text-purple-500 py-8">
+                You are not enrolled in any courses yet.
+              </div>
+            )}
+          </div>
+        </TabsContent>
 
+        <TabsContent value="achievements">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { title: "First Course Completed", description: "Completed Graphic Design course", earned: true },
+              { title: "Week Warrior", description: "Completed 7 days of learning", earned: false },
+              { title: "Tech Master", description: "Complete 5 technical courses", earned: false }
+            ].map((item, idx) => (
+              <Card
+                key={idx}
+                className={`bg-white/80 backdrop-blur-sm border-purple-200 ${item.earned ? "" : "opacity-60"}`}
+              >
+                <CardContent className="p-6 text-center">
+                  <Award className={`h-12 w-12 mx-auto mb-4 ${item.earned ? "text-yellow-500" : "text-gray-400"}`} />
+                  <h3 className={`font-semibold mb-2 ${item.earned ? "text-purple-800" : "text-gray-600"}`}>
+                    {item.title}
+                  </h3>
+                  <p className={`text-sm ${item.earned ? "text-purple-600" : "text-gray-500"}`}>
+                    {item.description}
+                  </p>
+                  <Badge className={`mt-2 ${item.earned ? "bg-yellow-100 text-yellow-800" : "bg-gray-200 text-gray-600"}`}>
+                    {item.earned ? "Earned" : "Locked"}
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </motion.div>
+  );
 };
 
 export default Dashboard;
