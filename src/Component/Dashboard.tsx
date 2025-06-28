@@ -197,7 +197,7 @@ const handleSchedule = async () => {
         type="datetime-local"
         value={scheduleTime}
         onChange={(e) => setScheduleTime(e.target.value)}
-        className="rounded border border-purple-200 p-1 text-sm"
+        className="rounded border border-purple-300 p-1 text-sm"
       />
       <Button
         onClick={handleSchedule}
@@ -245,8 +245,8 @@ const handleSchedule = async () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { title: "First Course Completed", description: "Completed Graphic Design course", earned: true },
-              { title: "Week Warrior", description: "Completed 7 days of learning", earned: false },
-              { title: "Tech Master", description: "Complete 5 technical courses", earned: false }
+              { title: "Warrior", description: "Completed 7 days of learning", earned: false },
+              { title: "Master", description: "Complete 5 technical courses", earned: false }
             ].map((item, idx) => (
               <Card
                 key={idx}
