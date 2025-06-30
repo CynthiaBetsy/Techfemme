@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Component/ui/Card";
 import { Avatar, AvatarFallback, AvatarImage } from "../Component/ui/Avatar";
@@ -12,6 +13,7 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../firebase";
 import { toast } from "sonner";
+import { signOut } from "firebase/auth";
 
 interface Course {
   id: string;
@@ -73,6 +75,7 @@ const CourseCard = ({ course }: { course: Course }) => (
 );
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
 const [scheduleTime, setScheduleTime] = useState<string>("");
@@ -132,6 +135,17 @@ const handleSchedule = async () => {
   };
 
   if (!user) return <p>Loading...</p>;
+  const handleLogout = async () => {
+  const auth = getAuth();
+  try {
+    await signOut(auth);
+    toast.success("Logged out successfully");
+    navigate("/"); // navigate to home page
+  } catch (error) {
+    toast.error("Failed to log out");
+    console.error(error);
+  }
+};
 
   return (
     <motion.div className="max-w-6xl mx-auto px-4 py-8 dark:bg-gray-900 dark:text-white min-h-screen transition-colors duration-300">
@@ -269,6 +283,14 @@ const handleSchedule = async () => {
           </div>
         </TabsContent>
       </Tabs>
+      <div className="mt-10 text-center">
+  <Button
+    onClick={handleLogout}
+    className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md"
+  >
+    Log Out
+  </Button>
+</div>
     </motion.div>
   );
 };
