@@ -31,7 +31,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative py-20 px-6 md:px-12 lg:px-24 bg-gradient-to-br from-purple-400 to-pink-400 text-white rounded-b-3xl overflow-hidden">
+    <section className="relative py-20 px-6 md:px-12 lg:px-24 bg-gradient-to-br from-purple-400 to-pink-400 text-white overflow-hidden">
       <motion.div
         className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-8"
         initial="hidden"
