@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import AuthModal from "./Component/AuthModal"; 
 import Navbar from "./Component/Navbar";
@@ -20,7 +20,7 @@ const App: React.FC = () => {
     setModalType(type === "signin" ? "signin" : null);
 
   return (
-    <BrowserRouter>
+    <>
       <Navbar setShowAuthModal={handleShowAuthModal} />
 
       <Routes>
@@ -59,7 +59,7 @@ const App: React.FC = () => {
           setModalType={setModalType}
         />
       )}
-    </BrowserRouter>
+    </>
   );
 };
 
