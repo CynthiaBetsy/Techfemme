@@ -244,7 +244,7 @@ const handleSchedule = async () => {
         </div>
 
         <TabsContent value="courses">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
             {courses.length > 0 ? (
               courses.map((course) => <CourseCard key={course.id} course={course} />)
             ) : (
@@ -284,12 +284,14 @@ const handleSchedule = async () => {
         </TabsContent>
       </Tabs>
       <div className="mt-10 text-center">
+ <div className="mt-10 flex justify-end">
   <Button
     onClick={handleLogout}
     className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md"
   >
     Log Out
   </Button>
+</div>
 </div>
     </motion.div>
   );

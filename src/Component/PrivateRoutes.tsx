@@ -1,27 +1,30 @@
-// src/Component/PrivateRoutes.tsx
-import React, { useEffect, useState } from "react";
-import { onAuthStateChanged, User } from "firebase/auth"; 
-import { auth } from "../firebase";
+// Component/PrivateRoutes.tsx
+import React from "react";
 import { Navigate } from "react-router-dom";
+import {useAuth} from "../Component/Context/useAuth";
 
-const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null); 
-  const [loading, setLoading] = useState(true);
+interface PrivateRouteProps {
+  children: React.ReactElement;
+  adminOnly?: boolean;           
+}
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
+const PrivateRoute: React.FC<PrivateRouteProps> = ({
+  children,
+  adminOnly = false,             
+}) => {
+  const { user } = useAuth();     
 
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
+  // Not logged in?
+  if (!user) {
+    return <Navigate to="/" replace />;
   }
 
-  return user ? <>{children}</> : <Navigate to="/" />;
+  // If route is admin‑only but user isn’t an admin
+  if (adminOnly && !user.isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 };
 
 export default PrivateRoute;
