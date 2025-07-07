@@ -97,10 +97,12 @@ const [scheduleTime, setScheduleTime] = useState<string>("");
     return () => unsubscribe();
   }, []);
 
-  const isNewUser = (joinDate: string): boolean => {
-  const join = new Date(joinDate).toDateString();
-  const today = new Date().toDateString();
-  return join === today;
+const isNewUser = () => {
+  if (!user?.joinDate) return false;
+  const joinTime = new Date(user.joinDate).getTime();
+  const now = new Date().getTime();
+  const minutesSinceJoin = (now - joinTime) / 1000 / 60;
+  return minutesSinceJoin < 1; 
 };
 
 const handleSchedule = async () => {
@@ -178,8 +180,8 @@ const handleSchedule = async () => {
 
         {/* Greeting */}
         <div className="flex-1 space-y-2">
-        <h1 className="text-2xl font-bold text-purple-800 dark:text-purple-200">
-  {isNewUser(user.joinDate) ? "Welcome" : "Welcome back"}, {user.firstname} 👋
+      <h1>
+  {isNewUser() ? `Welcome, ${user.firstname} 👋` : `Welcome back, ${user.firstname} 👋`}
 </h1>
           <h3 className="text-2xl font-bold text-purple-800 dark:text-purple-200">
              {user.enrolledCourses} 
