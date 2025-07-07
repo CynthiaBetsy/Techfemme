@@ -88,7 +88,6 @@ const [scheduleTime, setScheduleTime] = useState<string>("");
         if (userDoc.exists()) {
           const userData = userDoc.data() as User;
           setUser(userData);
-          // If enrolledCourses is a string of IDs, fetch course details here; for now, set to empty array if not an array
           setCourses(Array.isArray(userData.enrolledCourses) ? userData.enrolledCourses : []);
           setScheduleTime(userData.studySchedule || "");
 
@@ -97,6 +96,13 @@ const [scheduleTime, setScheduleTime] = useState<string>("");
     });
     return () => unsubscribe();
   }, []);
+
+  const isNewUser = (joinDate: string): boolean => {
+  const join = new Date(joinDate).toDateString();
+  const today = new Date().toDateString();
+  return join === today;
+};
+
 const handleSchedule = async () => {
   const auth = getAuth();
   const currentUser = auth.currentUser;
@@ -140,7 +146,7 @@ const handleSchedule = async () => {
   try {
     await signOut(auth);
     toast.success("Logged out successfully");
-    navigate("/"); // navigate to home page
+    navigate("/"); 
   } catch (error) {
     toast.error("Failed to log out");
     console.error(error);
@@ -172,9 +178,9 @@ const handleSchedule = async () => {
 
         {/* Greeting */}
         <div className="flex-1 space-y-2">
-          <h1 className="text-2xl font-bold text-purple-800 dark:text-purple-200">
-            Welcome, {user.firstname} 👋
-          </h1>
+        <h1 className="text-2xl font-bold text-purple-800 dark:text-purple-200">
+  {isNewUser(user.joinDate) ? "Welcome" : "Welcome back"}, {user.firstname} 👋
+</h1>
           <h3 className="text-2xl font-bold text-purple-800 dark:text-purple-200">
              {user.enrolledCourses} 
           </h3>
