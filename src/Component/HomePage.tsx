@@ -5,6 +5,7 @@ import Courses from "./Courses";
 import HowItWorks from "./HowItWorks";
 import JoinCommunity from "./JoinCommunity";
 import Footer from "./Footer";
+import Testimonials from "./Testimonials";
 
 const HomePage: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const HomePage: React.FC = () => {
       <Courses />
       <HowItWorks />
       <JoinCommunity />
+     <Testimonials />
       <Footer />
     </>
   );

@@ -27,7 +27,6 @@ const App: React.FC = () => {
         {/* Public */}
         <Route path="/" element={<HomePage />} />
         <Route path="/regform" element={<RegistrationForm />} />
-
         {/* Protected user dashboard */}
         <Route
           path="/dashboard"

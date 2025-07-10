@@ -30,9 +30,9 @@ const Navbar: React.FC<NavbarProps> = ({ setShowAuthModal }) => {
         </button>
 
         <div className="hidden md:flex space-x-6 items-center">
-          <Link to="/courses" className="text-purple-700 hover:text-purple-400">Courses</Link>
           <Link to="/dashboard" className="text-purple-700 hover:text-purple-400">Dashboard</Link>
-          <Link to="/certification" className="text-purple-700 hover:text-purple-400">Certification</Link>
+                    <Link to="/courses" className="text-purple-700 hover:text-purple-400">Courses</Link>
+          <Link to="/blog" className="text-purple-700 hover:text-purple-400">Blog</Link>
           <button
             onClick={() => setShowAuthModal('signin')}
             className="px-4 py-2 border border-purple-600 text-purple-600 rounded hover:bg-purple-100 cursor-pointer"
@@ -50,9 +50,9 @@ const Navbar: React.FC<NavbarProps> = ({ setShowAuthModal }) => {
 
       {menuOpen && (
         <div className="md:hidden flex flex-col p-4 bg-amber-50 items-start space-y-4 mt-4 px-4">
-          <Link to="/courses" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Dashboard</Link>
-          <Link to="/dashboard" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Courses</Link>
-          <Link to="/certification" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Certification</Link>
+          <Link to="/dashboard" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+          <Link to="/courses" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Courses</Link>
+          <Link to="/blog" className="text-gray-700 hover:text-purple-600" onClick={() => setMenuOpen(false)}>Blog</Link>
           <button
             onClick={() => { setShowAuthModal('signin'); setMenuOpen(false); }}
             className="w-full text-left px-4 py-2 border border-purple-600 text-purple-600 rounded hover:bg-blue-100 cursor-pointer"
