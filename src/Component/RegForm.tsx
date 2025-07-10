@@ -11,6 +11,7 @@ interface FormData {
   firstName: string;
   lastName: string;
   email: string;
+  bio: string;
   countryCode: string;
   phone: string;
   course: string;
@@ -21,8 +22,7 @@ const countryOptions = [
   { code: '+229', label: 'Benin +229' },
   { code: '+226', label: 'Burkina Faso +226' },
   { code: '+237', label: 'Cameroon +237' },
-  { code: '+225', label: 'Côte d’Ivoire +225' },
-  { code: '+20',  label:  'Egypt +20' },
+  { code: '+20', label: 'Egypt +20' },
   { code: '+251', label: 'Ethiopia +251' },
   { code: '+220', label: 'Gambia +220' },
   { code: '+233', label: 'Ghana +233' },
@@ -52,6 +52,7 @@ const RegistrationForm: React.FC = () => {
     firstName: '',
     lastName: '',
     email: '',
+    bio: '',
     countryCode: '+234',
     phone: '',
     course: '',
@@ -63,24 +64,14 @@ const RegistrationForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
   const navigate = useNavigate();
 
   const togglePassword = () => setShowPassword(prev => !prev);
 
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validatePhone = (phone: string) => /^\d{10}$/.test(phone);
 
-  const validatePhone = (phone: string) => {
-    const re = /^\d{10}$/;
-    return re.test(phone);
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -126,13 +117,13 @@ const RegistrationForm: React.FC = () => {
         firstname: firstName,
         lastname: lastName,
         email,
+        bio: formData.bio.trim(),
         phone: fullPhone,
-        course: course,
+        course,
         uid: user.uid,
         createdAt: new Date().toISOString(),
         role: 'student',
         avatar: '',
-      
         joinDate: new Date().toISOString(),
         streak: 0,
         totalHours: 0,
@@ -142,10 +133,9 @@ const RegistrationForm: React.FC = () => {
 
       await setDoc(doc(db, 'users', user.uid), userData);
       await sendWelcomeEmail(email, firstName);
-
       localStorage.setItem('user', JSON.stringify(userData));
 
-      setSubmitted(true);
+     setSubmitted(true);
       navigate('/dashboard');
     } catch (err: unknown) {
       if (typeof err === 'object' && err !== null && 'code' in err) {
@@ -176,13 +166,7 @@ const RegistrationForm: React.FC = () => {
       {showSignInModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer"
-              onClick={() => setShowSignInModal(false)}
-              aria-label="Close sign in modal"
-            >
-              ✕
-            </button>
+            <button className="absolute top-2 right-2 text-gray-500 hover:text-red-500" onClick={() => setShowSignInModal(false)}>✕</button>
             <SignInForm closeModal={() => setShowSignInModal(false)} />
           </div>
         </div>
@@ -196,25 +180,36 @@ const RegistrationForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="max-w-3xl mx-auto p-8 bg-purple-50 rounded-2xl shadow-lg border border-purple-400">
           <h2 className="text-3xl font-semibold text-purple-400 mb-8 text-center">Register With TechFemme</h2>
           <div className="grid grid-cols-1 gap-6">
-            {[{ label: 'First Name', name: 'firstName', type: 'text', placeholder: 'first name' },
-              { label: 'Last Name', name: 'lastName', type: 'text', placeholder: 'last name' },
-              { label: 'Email Address', name: 'email', type: 'email', placeholder: 'name@example.com' }].map(({ label, name, type, placeholder }) => (
+            {[{ label: 'First Name', name: 'firstName' }, { label: 'Last Name', name: 'lastName' }, { label: 'Email Address', name: 'email' }].map(({ label, name }) => (
               <div key={name}>
                 <label htmlFor={name} className="block text-sm font-medium text-purple-400 mb-1">
                   {label} <span className="text-red-500">*</span>
                 </label>
                 <input
                   required
-                  type={type}
+                  type="text"
                   name={name}
                   id={name}
                   value={formData[name as keyof FormData]}
                   onChange={handleChange}
                   className="w-full rounded-md border border-purple-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder={placeholder}
                 />
               </div>
             ))}
+
+            <div>
+              <label htmlFor="bio" className="block text-sm font-medium text-purple-400 mb-1">Short Bio <span className="text-gray-400 text-xs">(optional)</span></label>
+              <textarea
+                id="bio"
+                name="bio"
+                rows={3}
+                maxLength={30}
+                value={formData.bio}
+                onChange={handleChange}
+                placeholder="Tell us about your goals or what you'd like to learn..."
+                className="w-full rounded-md border border-purple-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-purple-400 mb-1">Phone Number <span className="text-red-500">*</span></label>
@@ -241,9 +236,7 @@ const RegistrationForm: React.FC = () => {
             </div>
 
             <div className="relative">
-              <label htmlFor="password" className="block text-sm font-medium text-purple-400 mb-1">
-                Password <span className="text-red-500">*</span>
-              </label>
+              <label htmlFor="password" className="block text-sm font-medium text-purple-400 mb-1">Password <span className="text-red-500">*</span></label>
               <input
                 id="password"
                 name="password"
@@ -254,18 +247,13 @@ const RegistrationForm: React.FC = () => {
                 className="w-full rounded-md border border-purple-400 px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder="Choose a secure password"
               />
-              <span
-                onClick={togglePassword}
-                className="absolute right-3 top-11 transform -translate-y-1/2 cursor-pointer text-gray-500"
-              >
+              <span onClick={togglePassword} className="absolute right-3 top-11 transform -translate-y-1/2 cursor-pointer text-gray-500">
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </span>
             </div>
 
             <div>
-              <label htmlFor="course" className="block text-sm font-medium text-purple-400 mb-1">
-                Course <span className="text-red-500">*</span>
-              </label>
+              <label htmlFor="course" className="block text-sm font-medium text-purple-400 mb-1">Course <span className="text-red-500">*</span></label>
               <select
                 name="course"
                 id="course"
@@ -283,11 +271,7 @@ const RegistrationForm: React.FC = () => {
               </select>
             </div>
 
-            {error && (
-              <div className="mt-4 text-red-600 font-medium text-center" role="alert">
-                {error}
-              </div>
-            )}
+            {error && <div className="mt-4 text-red-600 font-medium text-center">{error}</div>}
 
             <div className="mt-8 text-center">
               <button
@@ -295,14 +279,7 @@ const RegistrationForm: React.FC = () => {
                 className="inline-flex items-center justify-center bg-purple-400 text-white font-semibold px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors cursor-pointer disabled:opacity-50"
                 disabled={loading}
               >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="animate-spin" size={20} />
-                    Submitting...
-                  </span>
-                ) : (
-                  'Submit'
-                )}
+                {loading ? <><Loader2 className="animate-spin" size={20} /> Submitting...</> : 'Submit'}
               </button>
             </div>
 
@@ -313,11 +290,7 @@ const RegistrationForm: React.FC = () => {
                 className="text-purple-600 cursor-pointer hover:underline"
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setShowSignInModal(true);
-                  }
-                }}
+                onKeyDown={(e) => ['Enter', ' '].includes(e.key) && setShowSignInModal(true)}
               >
                 Sign in
               </span>

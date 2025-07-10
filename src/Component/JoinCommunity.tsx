@@ -13,7 +13,7 @@ const JoinCommunity = () => {
             Connect with fellow learners, mentors, and industry leaders on our WhatsApp group and mailing list.
           </p>
           <a
-            href="https:/wa.me/+2349030828658" 
+            href="https://chat.whatsapp.com/HhkMJ43B4fm9d70xQuxWWB" 
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-green-800 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow transition"
