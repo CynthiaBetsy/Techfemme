@@ -8,7 +8,7 @@ import Dashboard from "./Component/Dashboard";
 import HomePage from "./Component/HomePage";
 import PrivateRoute from "./Component/PrivateRoutes";
 import AdminDashboard from "./Component/AdminDashboard";
-
+import Blog from "../src/Component/BlogPage/Blog";
 // Type for modal
 type ModalType = "signin" | null;
 
@@ -27,6 +27,7 @@ const App: React.FC = () => {
         {/* Public */}
         <Route path="/" element={<HomePage />} />
         <Route path="/regform" element={<RegistrationForm />} />
+        <Route path="/blog" element={<Blog />} />
         {/* Protected user dashboard */}
         <Route
           path="/dashboard"
