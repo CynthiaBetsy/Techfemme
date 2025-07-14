@@ -31,7 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ setShowAuthModal }) => {
 
         <div className="hidden md:flex space-x-6 items-center">
           <Link to="/dashboard" className="text-purple-700 hover:text-purple-400">Dashboard</Link>
-                    <Link to="/courses" className="text-purple-700 hover:text-purple-400">Courses</Link>
+          <Link to="/courses" className="text-purple-700 hover:text-purple-400">Courses</Link>
           <Link to="/blog" className="text-purple-700 hover:text-purple-400">Blog</Link>
           <button
             onClick={() => setShowAuthModal('signin')}

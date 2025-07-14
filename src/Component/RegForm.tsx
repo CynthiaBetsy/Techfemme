@@ -206,7 +206,7 @@ const RegistrationForm: React.FC = () => {
                 maxLength={30}
                 value={formData.bio}
                 onChange={handleChange}
-                placeholder="Tell us about your goals or what you'd like to learn..."
+                placeholder="Tell us a little about yourself"
                 className="w-full rounded-md border border-purple-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
