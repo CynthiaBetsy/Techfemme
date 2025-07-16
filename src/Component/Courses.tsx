@@ -10,6 +10,18 @@ interface SubscriptionPlan {
 }
 
 const subscriptionPlans: SubscriptionPlan[] = [
+    {
+    title: "🛠 Career Builder",
+    courses: "Resume Writing, LinkedIn Optimization, Freelance Skills, Interview Prep",
+    price: 12000,
+    discounted: 9000,
+  },
+  {
+    title: "📢 Tech Marketing",
+    courses: "SEO, Social Media Strategy, Content Marketing, Analytics, Branding",
+    price: 18000,
+    discounted: 13000,
+  },
   {
     title: "🧠 Starter Developer",
     courses: "HTML, CSS, JavaScript Basics, Git & GitHub, Building First Portfolio",
@@ -21,18 +33,8 @@ const subscriptionPlans: SubscriptionPlan[] = [
     price: 25000,
     discounted: 20000,
   },
-  {
-    title: "📢 Tech Marketing",
-    courses: "SEO, Social Media Strategy, Content Marketing, Analytics, Branding",
-    price: 18000,
-    discounted: 13000,
-  },
-  {
-    title: "🛠 Career Builder",
-    courses: "Resume Writing, LinkedIn Optimization, Freelance Skills, Interview Prep",
-    price: 12000,
-    discounted: 9000,
-  },
+  
+
   {
     title: "🌟 All Access Pro",
     courses: "All 4 categories + mentorship + certificate + community support",
